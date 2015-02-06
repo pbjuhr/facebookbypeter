@@ -1,0 +1,277 @@
+<div class="tutorial">
+  <header class="hero-unit" id="banner">
+      <h1>Use Facebook Graph API with an Angular-fullstack app</h1>
+  </header>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-4">
+        <div class="well menu">
+          <h3>Table of contents</h3>
+          <ol>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#knowledge-requirements">Knowledge requirements</a></li>
+            <li><a href="#setup-application">Setup application</a></li>
+            <li><a href="#setup-facebook-application">Setup Facebook application</a></li>
+            <li><a href="#include-ng-facebook">Include ng-facebook in application</a></li>
+            <li><a href="#provide-facebook-service">Provide Facebook service to a controller</a></li>
+            <li><a href="#graph-api">Graph API: Get and present data</a></li>
+          </ol>
+        </div>
+      </div>
+      <div class="col-xs-8">
+        <section id="introduction">
+          <h2>Introduction</h2>
+          <p>
+            The purpose of this tutorial is to learn how to use ng-facebook to get data from the Facebook-API in angular-fullstack-generated applications. The tutorial walks us through the process of creating a simple web application, using the Yeoman generator "Angular-fullstack". The application lets the user login with Facebook, and then show all kinds of data from the Facebook Graph-API. 
+          </p>
+         
+          <p>
+          You're required to have <a href="http://nodejs.org/" target="_blank">Node.js</a>, MongoDB and <a href="http://yeoman.io/learning/" target="_blank">Yeoman with angular-fullstack generator</a> installed on your computer!
+          </p>
+
+          <p>
+            Useful links: 
+            <a href="http://nodejs.org/" target="_blank">Node.js</a>, 
+            <a href="https://angularjs.org/" target="_blank">AngularJS</a>, 
+            <a href="http://yeoman.io/" target="_blank">Yeoman</a>, 
+            <a href="https://github.com/DaftMonk/generator-angular-fullstack" target="_blank">Angular-fullstack</a>, 
+            <a href="https://github.com/GoDisco/ngFacebook" target="_blank">ng-facebook</a>, 
+            <a href="https://developers.facebook.com/docs/graph-api" target="_blank">Facebook Graph API</a>
+          </p>
+
+          <p>
+            <a href="/">An example application is available here!</a>
+          </p>
+        </section>
+
+
+
+        <section id="knowledge-requirements">
+          <h2>Knowledge requirements</h2>
+          <p>
+            The tutorial requires you to have some basic knowledge in the following areas:
+          </p>
+          <ul>
+            <li>Html, css, javascript</li>
+            <li>General programming</li>
+            <li>Node.js, AngularJS and Yeoman</li>
+          </ul>
+          <p>
+            Before we start, you have to register yourself as a <a href="https://developers.facebook.com/" target="_blank">Facebook developer</a> and I recomend that you read through the <a href="https://developers.facebook.com/docs/graph-api" target="_blank">Facebook API quickstart guide.</a>
+          </p>
+        </section>
+
+
+
+
+        <section id="setup-application">
+          <h2>Setup application</h2>
+          <p>
+            First off we need to create our application, using Yeoman. In this example, I name the app "myApp". Start your terminal and do the following:
+          </p>
+          <ol>
+            <li>Create a folder anywhere: <code>mkdir myApp</code> </li>
+            <li>Navigate to folder: <code>cd myApp</code></li>
+            <li>Create the application: <code>yo angular-fullstack</code>
+              <p>
+                <strong>Use the following options when generating the app:</strong>
+              </p>
+              <p>
+                <em>What Angular router would you like to use?</em><br>
+                uiRouter.
+              </p> 
+              <p>
+                <em>Would you like to use mongoDB with Mongoose for data modeling?</em><br>
+                Yes.
+              </p> 
+              <p>
+                <em>Would you scaffold out an authentication boilerplate?</em><br>
+                Yes, Facebook. (Select by pressing space)
+              </p> 
+            </li>
+          </ol>
+          <p>
+            When you're done, the application will be created in "myApp"-folder. To be able to run the application in your web browser, you must start the server. This is done by two steps in the terminal:
+          </p>
+          <ol>
+            <li>Start your MongoDB server: <code>mongod</code></li>
+            <li>In another terminal tab, run your express server: <code>grunt serve</code></li>
+          </ol>
+          <p>
+            Your application is now available at <a href="http://localhost:9000" target="_blank">http://localhost:9000</a>.
+          </p>
+        </section>
+
+
+        <section id="setup-facebook-application">
+          <h2>Setup Facebook application</h2>
+          <p>
+            To login to our app or to use the Facebook Graph API, we need to create a Facebook application. Once you've become a Fecebook developer, you can <a href="https://developers.facebook.com/apps/" target="_blank">create your own Facebook-application here!</a>
+          </p>
+          <p>
+            After the Facebook application is created you should copy your App ID and your App secret into the file <code>server/config/local.env.js</code> which is available in your project folder.
+          </p>
+<pre>
+FACEBOOK_ID: 'YOUR-APP-ID',
+FACEBOOK_SECRET: 'YOUR-APP-SECRET',
+</pre>
+          <p>
+            Now you're ready to login to your app using Facebook! 
+          </p>
+        </section>
+
+
+
+        <section id="include-ng-facebook">
+          <h2>Include ng-facebook in application</h2>
+          <h3>Install</h3>
+          <p>
+            Ng-facebook is an Angular service to handle the Facebook API. To install ng-facebook in your project, use your terminal to navigate to your project folder and write:
+            <code>bower install ng-facebook</code>
+          </p>
+          <p>
+            After the install, you should se a folder called <code>ng-facebook</code> in the folder <code>myApp/client/bower_components</code>.
+          </p>
+
+          <h3>Load into application</h3>
+          <p>
+            To use the service in your controllers, you need to modify your application to include ngFacebook. This is done in the file <code>myApp/client/app/app.js</code>.
+          </p>
+          <ol>
+            <li>
+              First, add ngFacebook typ your angular.module:
+              <br><span class="text-muted">(Depending on your Yeoman setup, the code may look a little different)</span>    
+<pre>
+angular.module('nodeAppsApp', [
+  'ngCookies',
+  'ngResource',
+  'ngSanitize',
+  'ui.router',
+  'ui.bootstrap',
+<strong>  'ngFacebook'</strong>
+])</pre>
+            </li>
+            
+            <li>
+              <p>
+                Secondly, add the facebookProvider to your app. In the config function, add <code>$facebookProvider</code> and call the function <code>facebookProvider.setAppId</code>, with your Facebook App ID.
+                <br><span class="text-muted">(Depending on your Yeoman setup, the code may look a little different)</span>
+              </p>
+<pre>
+.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, <strong>$facebookProvider</strong>) {
+    $urlRouterProvider
+      .otherwise('/');
+    $locationProvider.html5Mode(true);
+    $httpProvider.interceptors.push('authInterceptor');<strong>
+    $facebookProvider.setAppId('YOUR-APP-ID');</strong>
+})
+</pre>
+            </li>
+            
+            <li>
+              <p>
+                At last, we need to load the Facebook SDK into our app. This is done by pasting some code from <a href="https://developers.facebook.com/docs/javascript/quickstart/v2.2" target="_blank">Quickstart: Facebook SDK for javascript</a> to the same file we've been working in. This time, paste the following in the run-function.
+              </p>
+<pre>
+.run(function ($rootScope, $location, Auth) {
+  //Code pasted from Facebook quickstart guide:<strong>
+  (function(d, s, id){
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {return;}
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</strong>
+
+  //Rest of the function goes here...
+</pre>
+            </li>
+          </ol>
+          <p>Now, we're ready to get soma data from the Faceboog Graph API in our controllers!</p>
+        </section>
+
+
+
+        <section id="provide-facebook-service">
+          <h2>Provide Facebook service to a controller</h2>
+          <p>
+            Let's create a new route in the app that requires login. In my example application, I've created a route called "events", but this integration requires approval from Facebook before public usage. Therefore, we create a route called "frends" in this tutorial. 
+          </p>
+          <p>
+            A route can be generated using Yeoman. In your terminal, navigate to the project folder and type: <code>yo angular-fullstack:route friends</code>. Just press enter on the following questions. You should see a folder named <code>friends</code> in the folder <code>myApp/client/app</code>
+          </p>
+          <p>
+            To prevent users from accessing this route when they're not logged in, add the following code to <code>friends.js</code> which is located in the folder mentioned above:
+          </p>
+<pre>
+angular.module('nodeAppsApp')
+  .config(function ($stateProvider) {
+    $stateProvider
+      .state('friends', {
+        url: '/friends',
+        templateUrl: 'app/friends/friends.html',
+        controller: 'FriendsCtrl',<strong>
+        authenticate: true</strong>
+      });
+  });
+</pre>  
+          <p>
+            By passing the variable $facebook to the controller, we can use the facebook service in it. This needs to be done in every controller using the service, in this case <code>friends.controller.js</code>
+          </p>
+<pre>
+angular.module('nodeAppsApp')
+  .controller('EventsCtrl', function ($scope, <strong>$facebook</strong>) {
+    // Controller code goes here...
+</pre>  
+        </section>
+
+        
+
+        <section id="graph-api">
+          <h2>Graph API: Get and present data</h2>
+          <h3>Get data in the controller</h3>
+          <p>
+            First, we need to get the Facebook Authentication token (not to mixup with our internal authentication token). This auth-token is required by many requests in the Graph API. To get the token, put the following code in the beginning of your controller:
+          </p>
+<pre>
+$facebook.getLoginStatus().then(function(response){
+  if(response.status === "connected") {
+    var token = response.authResponse.accessToken;
+    getFriends(token);
+  }
+});
+</pre>
+          <p>
+            As you can see in the code above, I call a method named getFrends directly after receiving the token. This method calls the Graph API and gets the users Facebook friends. The method looks like this:
+          </p>
+<pre>
+function getEvents(token) {
+  $facebook.api("me/friends", {access_token: token}).then(
+  function (response) {
+    if (response && !response.error) {
+      $scope.friends = response.data;
+    } 
+  });
+}
+</pre>
+          <p>
+            If the http request succeeds, we store the data (response.data) in the variable <code>$scope.friends</code>
+          </p>
+
+          <h3>Present data in the view</h3>
+          <p>
+            Since all friends has been stored in the <code>$scope.friends</code> variable they're reachable from the view, by refering to <code>friends</code>. To print all of our friends names, loop through the friends array using <code>ng-repeat</code>, according to the following code in <code>friends.html</code>:
+            <br><span class="text-muted">Note that you must remove the blankspace between the "{" and "}" characters</span>
+          </p>
+<pre>
+&lt;p ng-repeat=&quot;friend in friends&quot;&gt; 
+  { {friend.name} } 
+&lt;/p&gt;
+</pre>
+          <p>All of your friends should now be listed in your route, and we're done!</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

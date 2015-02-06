@@ -1,0 +1,71 @@
+$icon-font-path: "/bower_components/bootstrap-sass-official/vendor/assets/fonts/bootstrap/";
+$fa-font-path: "/bower_components/font-awesome/fonts";
+
+@import 'bootstrap-sass-official/vendor/assets/stylesheets/bootstrap';
+@import 'font-awesome/scss/font-awesome';
+
+body{
+	font-size: 18px !important;
+	line-height: 1.41 !important;
+	font-weight: 300 !important;
+}
+
+$facebook-blue: #3b5998;
+.btn-facebook{
+	background-color: $facebook-blue;
+	border: 1px solid darken($facebook-blue, 10%);
+	color: white;
+	&:hover, &:active{
+		background-color: darken($facebook-blue, 10%);
+		border: 1px solid darken($facebook-blue, 10%);
+		color: white;
+	}
+}
+
+h1, h2, h3{
+	font-weight: 700 !important;
+}
+
+/**
+ * App-wide Styles
+ */
+
+.hero-unit {
+    position: relative;
+    padding: 30px 20px;
+    color: #F5F5F5;
+    text-align: center;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+    background: #3B5998;
+    border-bottom: none;
+    margin-bottom: 30px;
+    margin-top: -20px;
+    h1 {
+		font-size: 60px;
+		letter-spacing: -1px;
+	}
+	.btn{
+		position: absolute;
+		right: 20px;
+		top: 65px;
+	}
+}
+
+.row.info {
+	margin-bottom: 30px;
+}
+
+.footer {
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 70px;
+    border-top: 1px solid #E5E5E5;
+}
+
+// Component styles are injected through grunt
+// injector
+@import 'events/events.scss';
+@import 'main/main.scss';
+@import 'tutorial/tutorial.scss';
+@import 'modal/modal.scss';
+// endinjector

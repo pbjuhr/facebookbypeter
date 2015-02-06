@@ -1,0 +1,22 @@
+<header class="hero-unit" id="banner">
+    <a class="btn btn-default" href="" ng-click="logout()"><i class="fa fa-power-off fa-fw"></i> Logout</a>
+    <h1>{{events.length}} upcoming events</h1>
+</header>
+
+<div class="container">
+  <div class="row" ng-repeat="event in events">
+    <div class="col-lg-8 col-lg-offset-2 event">
+    	<div class="pull-right" ng-show="{{event.rsvp_status == 'attending'}}">
+    		<p class="text-success">
+    			<i class="fa fa-check-square fa-fw"></i>Attending
+    		</p>
+    	</div>
+    	<h2>{{event.name}}</h2>
+    	<ul class="fa-ul">
+		  <li><i class="fa-li fa fa-map-marker"></i>{{event.location}}</li>
+		  <li><i class="fa-li fa fa-calendar"></i>{{event.start_time}}</li>
+		</ul>
+		<p><a href="https://www.facebook.com/events/{{event.id}}" target="_blank">Visit event</a></p>
+    </div>
+  </div>
+</div>
