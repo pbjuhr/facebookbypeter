@@ -23,7 +23,7 @@
         <section id="introduction">
           <h2>Introduction</h2>
           <p>
-            The purpose of this tutorial is to learn how to use ng-facebook to get data from the Facebook-API in angular-fullstack-generated applications. The tutorial walks us through the process of creating a simple web application, using the Yeoman generator "Angular-fullstack". The application lets the user login with Facebook, and then show all kinds of data from the Facebook Graph-API. 
+            The purpose of this tutorial is to learn how to use <a href="https://github.com/GoDisco/ngFacebook" target="_blank">ng-facebook</a> to get data from the Facebook-API in angular-fullstack-generated applications. The tutorial walks us through the process of creating a simple web application, using the Yeoman generator "Angular-fullstack". The application lets the user login with Facebook, and then show all kinds of data from the Facebook Graph-API. 
           </p>
          
           <p>
@@ -68,12 +68,12 @@
         <section id="setup-application">
           <h2>Setup application</h2>
           <p>
-            First off we need to create our application, using Yeoman. In this example, I name the app "myApp". Start your terminal and do the following:
+            First off we need to create our application using Yeoman. In this example, I have named the application "myApp". Start your terminal and follow these steps:
           </p>
           <ol>
             <li>Create a folder anywhere: <code>mkdir myApp</code> </li>
-            <li>Navigate to folder: <code>cd myApp</code></li>
-            <li>Create the application: <code>yo angular-fullstack</code>
+            <li>Navigate to the created folder: <code>cd myApp</code></li>
+            <li>Generate the application: <code>yo angular-fullstack</code>
               <p>
                 <strong>Use the following options when generating the app:</strong>
               </p>
@@ -101,6 +101,23 @@
           <p>
             Your application is now available at <a href="http://localhost:9000" target="_blank">http://localhost:9000</a>.
           </p>
+
+          <h3>Set correct permissions</h3>
+          <p>To be able to get the friends, you need to change som parameters in the file <code>server/auth/facebook/index.js</code>, according to the following code:
+<pre>
+// index.js
+
+router
+  .get('/', passport.authenticate('facebook', {<strong>
+    scope: ['email', 'public_profile', 'user_friends'],</strong>
+    failureRedirect: '/',
+    session: false
+  }))
+// rest of file
+</pre>
+          <p>
+            As you might discovered, we've added the "user_friends" permission and changed "user_about_me" to "public_profile", which are the standard permissions in a Facebook application.
+          </p>
         </section>
 
 
@@ -110,14 +127,14 @@
             To login to our app or to use the Facebook Graph API, we need to create a Facebook application. Once you've become a Fecebook developer, you can <a href="https://developers.facebook.com/apps/" target="_blank">create your own Facebook-application here!</a>
           </p>
           <p>
-            After the Facebook application is created you should copy your App ID and your App secret into the file <code>server/config/local.env.js</code> which is available in your project folder.
+            After the Facebook application is created you should copy your App ID and your App secret into the file <code>server/config/local.env.js</code> which is available in your project folder. 
           </p>
 <pre>
 FACEBOOK_ID: 'YOUR-APP-ID',
 FACEBOOK_SECRET: 'YOUR-APP-SECRET',
 </pre>
           <p>
-            Now you're ready to login to your app using Facebook! 
+            You need to restart your express server before the configuration takes place. After this, you're ready to login to your app using Facebook! 
           </p>
         </section>
 
@@ -140,7 +157,7 @@ FACEBOOK_SECRET: 'YOUR-APP-SECRET',
           </p>
           <ol>
             <li>
-              First, add ngFacebook typ your angular.module:
+              First, add ngFacebook to your angular.module:
               <br><span class="text-muted">(Depending on your Yeoman setup, the code may look a little different)</span>    
 <pre>
 angular.module('nodeAppsApp', [
@@ -235,23 +252,26 @@ angular.module('nodeAppsApp')
             First, we need to get the Facebook Authentication token (not to mixup with our internal authentication token). This auth-token is required by many requests in the Graph API. To get the token, put the following code in the beginning of your controller:
           </p>
 <pre>
-$facebook.getLoginStatus().then(function(response){
-  if(response.status === "connected") {
-    var token = response.authResponse.accessToken;
-    getFriends(token);
-  }
-});
+$facebook.getLoginStatus().then(
+  function(response) {
+    if(response.status === "connected") {
+      var token = response.authResponse.accessToken;
+      getFriends(token);
+    }
+  }, function(err) {
+    console.log("Something went wrong...");
+  });
 </pre>
           <p>
             As you can see in the code above, I call a method named getFrends directly after receiving the token. This method calls the Graph API and gets the users Facebook friends. The method looks like this:
           </p>
 <pre>
-function getEvents(token) {
+function getFriends(token) {
   $facebook.api("me/friends", {access_token: token}).then(
   function (response) {
-    if (response && !response.error) {
-      $scope.friends = response.data;
-    } 
+    $scope.friends = response.data;
+  }, function(err) {
+    console.log("Something went wrong...");
   });
 }
 </pre>

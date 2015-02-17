@@ -14,7 +14,7 @@ angular.module('nodeAppsApp', [
 
     $locationProvider.html5Mode(true);
     $httpProvider.interceptors.push('authInterceptor');
-    $facebookProvider.setVersion("v1.0");
+    $facebookProvider.setVersion("v2.0");
     $facebookProvider.setAppId('270589326312815');
     $facebookProvider.setPermissions("user_events");
   })
